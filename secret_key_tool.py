@@ -88,6 +88,14 @@ if __name__ == "__main__":
 		# Base58 playground
 		for i in range(65536):
 			print(i, i2b58(i))
+	elif "gen_keys_with" in argv[0]:
+		def rnd(l):
+			return bytes([random.randint(0, 255) for i in range(l)])
+		bs = [ (bytes(s, 'utf-8')+rnd(16))[:16] for s in argv[1:] if s!="" ]
+		for b in bs:
+			print(b, list(b))
+			h = genXRPSecret(b)
+			print(h.decode('utf-8'))
 	elif "min_max" in argv[0]:
 		# Show min and max secret key
 		"""
@@ -104,7 +112,7 @@ if __name__ == "__main__":
 			print(list(b))
 			h = genXRPSecret(b)
 			print(h)
-	elif "gen" in argv[0]:
+	elif "vanity" in argv[0]:
 		prefix = bytes(argv[1], 'utf-8')
 		for i in range(10000000):
 			b = bytes([ random.randint(0, 255) for i in range(16) ])
