@@ -25,6 +25,17 @@ def b2b58(s):
 		v = v // 58
 	return b
 
+def i2b58(v):
+	"""
+	i: int
+	return: ([0-9a-zA-Z] - {0, I, O, l})[]
+	"""
+	b = b""
+	while v > 0:
+		b = bytes([Base58Table[v % 58]]) + b
+		v = v // 58
+	return b
+
 def b582b(s):
 	"""
 	s: ([0-9a-zA-Z] - {0, I, O, l})[]
@@ -65,16 +76,35 @@ def genXRPSecret(b16):
 	print(h)
 	"""
 	withH = bytes([33]) + b16
-	s = b2hex(withH)
-	s += b2hex(checksum(withH))
-	h = b2b58(hex2b(s))
+	s = withH + checksum(withH)
+	h = b2b58(s)
 	return h
 
 if __name__ == "__main__":
 	import sys
 	import random
 	argv = sys.argv[1:] + [""]*100
-	if "gen" in argv[0]:
+	if "lab1" in argv[0]:
+		# Base58 playground
+		for i in range(65536):
+			print(i, i2b58(i))
+	elif "min_max" in argv[0]:
+		# Show min and max secret key
+		"""
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		b'sp6JS7f14BuwFY8Mw6bTtLKWauoUs'
+		[255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+		b'saGwBRReqUNKuWNLpUAq8i8NkXEPN'
+		"""
+		bs = [
+			bytes([0]*16),
+			bytes([255]*16),
+		]
+		for b in bs:
+			print(list(b))
+			h = genXRPSecret(b)
+			print(h)
+	elif "gen" in argv[0]:
 		prefix = bytes(argv[1], 'utf-8')
 		for i in range(10000000):
 			b = bytes([ random.randint(0, 255) for i in range(16) ])
